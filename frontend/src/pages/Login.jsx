@@ -1,5 +1,3 @@
-// src/pages/Login.jsx
-
 import React, { useState } from "react";
 import { Container, TextField, Button, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -13,11 +11,13 @@ const Login = () => {
 
    const handleLogin = async () => {
       try {
-         const response = await api.post("/login", { email, password }); // Backend login endpoint
-         if (response.data.success) {
+         const response = await api.post("api/auth/login", { email, password }); // Backend login endpoint
+         // Expect the response to contain 'message' and 'token'
+         if (response.data.token) {
+            localStorage.setItem("token", response.data.token); // Store the token for authenticated routes
             navigate("/dashboard");
          } else {
-            setError("Invalid credentials. Please try again.");
+            setError(response.data.message || "Invalid credentials. Please try again.");
          }
       } catch (error) {
          setError("An error occurred. Please try again.");
