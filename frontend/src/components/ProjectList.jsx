@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from "react";
-import { Button, Typography, CircularProgress, Grid } from "@mui/material";
+import { Button, Typography, CircularProgress, Grid2 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-import CategoryList from "./CategoryList"; // Import CategoryList component
+import CategoryList from "./CategoryList"; 
 
 const ProjectList = () => {
    const [projects, setProjects] = useState([]);
@@ -16,7 +16,7 @@ const ProjectList = () => {
    useEffect(() => {
       const fetchProjects = async () => {
          try {
-            const response = await api.get("api/projects"); // Ensure correct API path
+            const response = await api.get("api/projects"); 
             console.log("Projects fetched:", response.data);
             setProjects(response.data);
          } catch (err) {
@@ -45,9 +45,9 @@ const ProjectList = () => {
    return (
       <div>
          {!selectedProject ? (
-            <Grid container spacing={3}>
+            <Grid2 container spacing={3}>
                {projects.map((project) => (
-                  <Grid item xs={12} sm={6} md={4} key={project.project_id}>
+                  <Grid2 item xs={12} sm={6} md={4} key={project.project_id}>
                      <Button
                         variant="contained"
                         fullWidth
@@ -57,9 +57,9 @@ const ProjectList = () => {
                      </Button>
                      <Typography variant="body2">{project.description}</Typography>
                      <Typography variant="caption">{project.start_date}</Typography>
-                  </Grid>
+                  </Grid2>
                ))}
-            </Grid>
+            </Grid2>
          ) : (
             <CategoryList projectId={selectedProject} /> // Render category list for selected project
          )}
