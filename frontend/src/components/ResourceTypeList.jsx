@@ -1,6 +1,6 @@
 // src/components/ResourceTypeList.jsx
 import React from "react";
-import { Grid, Button, Typography } from "@mui/material";
+import { Grid2, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const ResourceTypeList = ({ resourceTypes }) => {
@@ -11,9 +11,9 @@ const ResourceTypeList = ({ resourceTypes }) => {
    };
 
    return (
-      <Grid container spacing={3}>
+      <Grid2 container spacing={3}>
          {resourceTypes.map((resourceType) => (
-            <Grid item xs={12} sm={6} md={4} key={resourceType.id}>
+            <Grid2 item xs={12} sm={6} md={4} key={resourceType.id}>
                <Button
                   variant="contained"
                   fullWidth
@@ -21,9 +21,9 @@ const ResourceTypeList = ({ resourceTypes }) => {
                >
                   {resourceType.name}
                </Button>
-            </Grid>
+            </Grid2>
          ))}
-      </Grid>
+      </Grid2>
    );
 };
 
