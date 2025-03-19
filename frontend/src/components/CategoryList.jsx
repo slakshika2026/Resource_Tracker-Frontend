@@ -1,55 +1,30 @@
-// // src/components/CategoryList.jsx
-// import React from "react";
-// import { Grid2, Button, Typography } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
-
-// const CategoryList = ({ categories }) => {
-//    const navigate = useNavigate();
-
-//    const handleSelectCategory = (categoryId) => {
-//       navigate(`/resource-types`, { state: { categoryId } });
-//    };
-
-//    return (
-//       <Grid2 container spacing={3}>
-//          {categories.map((category) => (
-//             <Grid2 item xs={12} sm={6} md={4} key={category.id}>
-//                <Button
-//                   variant="contained"
-//                   fullWidth
-//                   onClick={() => handleSelectCategory(category.id)}
-//                >
-//                   {category.name}
-//                </Button>
-//             </Grid2>
-//          ))}
-//       </Grid2>
-//    );
-// };
-
-// export default CategoryList;
-
-
 import React, { useState, useEffect } from "react";
-import { Grid2, Button, Typography, CircularProgress } from "@mui/material";
+import { Grid2, Button, Typography, CircularProgress, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-
 const CategoryList = () => {
    const navigate = useNavigate();
    const [categories, setCategories] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState("");
 
-   // Fetch categories from the backend
    useEffect(() => {
       const fetchCategories = async () => {
          try {
-            const response = await api.get("/api/resources/categories"); // Adjust the endpoint as per your backend
-            setCategories(response.data);
+            console.log("Fetching categories..."); // Debugging Log
+
+            const response = await api.get("/api/resources/categories");
+
+            console.log("API Response:", response); // Log entire response
+
+            if (response.status === 200 && response.data.length > 0) {
+               setCategories(response.data);
+            } else {
+               setError("No categories found.");
+            }
          } catch (err) {
-            setError("Failed to load categories.");
             console.error("Error fetching categories:", err);
+            setError(`Failed to load categories: ${err.message}`);
          } finally {
             setLoading(false);
          }
@@ -58,36 +33,42 @@ const CategoryList = () => {
       fetchCategories();
    }, []);
 
-   const handleSelectCategory = (categoryId) => {
-      navigate(`/resource-types`, { state: { categoryId } });
+   const handleSelectCategory = (category) => {
+      navigate(`/resource-types`, { state: { category } });
    };
 
    if (loading) {
       return (
-         <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+         <Container sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
             <CircularProgress />
-         </div>
+         </Container>
       );
    }
 
    if (error) {
-      return <Typography color="error" sx={{ textAlign: "center", mt: 3 }}>{error}</Typography>;
+      return <Typography color="error" align="center" sx={{ mt: 3 }}>{error}</Typography>;
    }
 
    return (
-      <Grid2 container spacing={3}>
-         {categories.map((category) => (
-            <Grid2 item xs={12} sm={6} md={4} key={category.id}>
-               <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={() => handleSelectCategory(category.id)}
-               >
-                  {category.name}
-               </Button>
-            </Grid2>
-         ))}
-      </Grid2>
+      <Container>
+         <Typography variant="h5" align="center" gutterBottom>
+            Select a Category
+         </Typography>
+         <Grid2 container spacing={3} justifyContent="center">
+            {categories.map((category, index) => (
+               <Grid2 item xs={12} sm={6} md={4} key={index}>
+                  <Button
+                     variant="contained"
+                     fullWidth
+                     sx={{ py: 2 }}
+                     onClick={() => handleSelectCategory(category.category)}
+                  >
+                     {category.category}
+                  </Button>
+               </Grid2>
+            ))}
+         </Grid2>
+      </Container>
    );
 };
 

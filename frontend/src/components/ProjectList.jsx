@@ -1,89 +1,27 @@
-// // src/components/ProjectList.jsx
-// import React, { useEffect, useState } from "react";
-// import { Grid2, Button, Typography, CircularProgress } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
-// import api from "../api/api"; // Assuming your api instance is correctly set up
-
-// const ProjectList = () => {
-//    const navigate = useNavigate();
-//    const [projects, setProjects] = useState([]);
-//    const [loading, setLoading] = useState(true);
-//    const [error, setError] = useState("");
-
-//    // Fetch the projects when the component mounts
-//    useEffect(() => {
-//       const fetchProjects = async () => {
-//          try {
-//             const response = await api.get('/projects'); // Adjusted to match backend route
-//             setProjects(response.data);
-//          } catch (err) {
-//             setError("Failed to load projects.");
-//             console.error(err);
-//          } finally {
-//             setLoading(false);
-//          }
-//       };
-
-//       fetchProjects();
-//    }, []);
-
-//    const handleSelectProject = (projectId) => {
-//       navigate(`/categories`, { state: { projectId } });
-//    };
-
-//    if (loading) {
-//       return (
-//          <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-//             <CircularProgress />
-//          </div>
-//       );
-//    }
-
-//    if (error) {
-//       return <Typography color="error" sx={{ textAlign: "center", mt: 3 }}>{error}</Typography>;
-//    }
-
-//    return (
-//       <Grid2 container spacing={3}>
-//          {projects.map((project) => (
-//             <Grid2 item xs={12} sm={6} md={4} key={project.project_id}>
-//                <Button
-//                   variant="contained"
-//                   fullWidth
-//                   onClick={() => handleSelectProject(project.project_id)}
-//                >
-//                   {project.name}
-//                </Button>
-//             </Grid2>
-//          ))}
-//       </Grid2>
-//    );
-// };
-
-// export default ProjectList;
-
 
 import React, { useState, useEffect } from "react";
-import { Grid2, Button, Typography, CircularProgress } from "@mui/material";
+import { Button, Typography, CircularProgress, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api"; // Ensure this is correctly pointing to your API
+import api from "../api/api";
+import CategoryList from "./CategoryList"; // Import CategoryList component
 
 const ProjectList = () => {
    const [projects, setProjects] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
+   const [selectedProject, setSelectedProject] = useState(null);
    const navigate = useNavigate();
 
    // Fetch projects from the backend
    useEffect(() => {
       const fetchProjects = async () => {
          try {
-            const response = await api.get('api/projects/');
-            console.log('Projects fetched:', response.data); // Log the response
+            const response = await api.get("api/projects"); // Ensure correct API path
+            console.log("Projects fetched:", response.data);
             setProjects(response.data);
          } catch (err) {
             setError(`Failed to load projects: ${err.message}`);
-            console.error('Error fetching projects:', err);
+            console.error("Error fetching projects:", err);
          } finally {
             setLoading(false);
          }
@@ -93,35 +31,39 @@ const ProjectList = () => {
    }, []);
 
    const handleSelectProject = (projectId) => {
-      navigate(`/categories`, { state: { projectId } });
+      setSelectedProject(projectId); // Store selected project
    };
 
    if (loading) {
-      return <CircularProgress />;  // Show loading spinner while fetching data
+      return <CircularProgress />;
    }
 
    if (error) {
-      return <Typography color="error">{error}</Typography>;  // Display error if fetching fails
+      return <Typography color="error">{error}</Typography>;
    }
 
    return (
-      <Grid2 container spacing={3}>
-         {projects.map((project) => (
-            <Grid2 item xs={12} sm={6} md={4} key={project.project_id}>
-               <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={() => handleSelectProject(project.project_id)}
-               >
-                  {project.name}
-
-               </Button>
-               {project.description}
-               <br />
-               {project.start_date}
-            </Grid2>
-         ))}
-      </Grid2>
+      <div>
+         {!selectedProject ? (
+            <Grid container spacing={3}>
+               {projects.map((project) => (
+                  <Grid item xs={12} sm={6} md={4} key={project.project_id}>
+                     <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={() => handleSelectProject(project.project_id)}
+                     >
+                        {project.name}
+                     </Button>
+                     <Typography variant="body2">{project.description}</Typography>
+                     <Typography variant="caption">{project.start_date}</Typography>
+                  </Grid>
+               ))}
+            </Grid>
+         ) : (
+            <CategoryList projectId={selectedProject} /> // Render category list for selected project
+         )}
+      </div>
    );
 };
 

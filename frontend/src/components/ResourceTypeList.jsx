@@ -1,46 +1,71 @@
-// src/components/ResourceTypeList.jsx
-import React, { useEffect, useState } from "react";
-import { Grid2, Button, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Grid2, Button, Typography, CircularProgress, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/api";
 
-const ResourceTypeList = () => {
+const CategoryList = () => {
    const navigate = useNavigate();
-   const [resourceTypes, setResourceTypes] = useState([]);
+   const [categories, setCategories] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState("");
 
    useEffect(() => {
-      // Fetch all resource types
-      const fetchResourceTypes = async () => {
+      const fetchCategories = async () => {
          try {
-            const response = await axios.get('/api/resources/categories');
-            setResourceTypes(response.data);  // Assuming the API returns an array of categories with resource types
-         } catch (error) {
-            console.error("Error fetching resource types:", error);
+            const response = await api.get("/categories"); // Adjusted API endpoint
+            if (response.data.length > 0) {
+               setCategories(response.data);
+            } else {
+               setError("No categories found.");
+            }
+         } catch (err) {
+            setError("Failed to load categories.");
+            console.error("Error fetching categories:", err);
+         } finally {
+            setLoading(false);
          }
       };
 
-      fetchResourceTypes();
+      fetchCategories();
    }, []);
 
-   const handleSelectResourceType = (category) => {
-      navigate(`/resources/categories/${category}/resource-types`);  // Navigating based on category
+   const handleSelectCategory = (category) => {
+      navigate(`/resource-types`, { state: { category } });
    };
 
+   if (loading) {
+      return (
+         <Container sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+            <CircularProgress />
+         </Container>
+      );
+   }
+
+   if (error) {
+      return <Typography color="error" align="center" sx={{ mt: 3 }}>{error}</Typography>;
+   }
+
    return (
-      <Grid2 container spacing={3}>
-         {resourceTypes.map((category) => (
-            <Grid2 item xs={12} sm={6} md={4} key={category.category}>
-               <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={() => handleSelectResourceType(category.category)}
-               >
-                  <Typography variant="h6">{category.category}</Typography> {/* Displaying category name */}
-               </Button>
-            </Grid2>
-         ))}
-      </Grid2>
+      <Container>
+         <Typography variant="h5" align="center" gutterBottom>
+            Select a Category
+         </Typography>
+         <Grid2 container spacing={3} justifyContent="center">
+            {categories.map((category) => (
+               <Grid2 item xs={12} sm={6} md={4} key={category.category}>
+                  <Button
+                     variant="contained"
+                     fullWidth
+                     sx={{ py: 2 }}
+                     onClick={() => handleSelectCategory(category.category)}
+                  >
+                     {category.category}
+                  </Button>
+               </Grid2>
+            ))}
+         </Grid2>
+      </Container>
    );
 };
 
-export default ResourceTypeList;
+export default CategoryList;
