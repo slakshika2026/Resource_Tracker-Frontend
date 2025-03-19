@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Typography } from "@mui/material";
 import ProjectList from "../components/ProjectList";
 import api from "../api/api";
+import Navbar from "../components/Navbar";
 
 const Dashboard = () => {
    const [projects, setProjects] = useState([]);
@@ -21,6 +22,7 @@ const Dashboard = () => {
 
    return (
       <Container>
+         <Navbar />
          <Typography variant="h4" sx={{ textAlign: "center", mt: 4 }}>
             Projects
          </Typography>
