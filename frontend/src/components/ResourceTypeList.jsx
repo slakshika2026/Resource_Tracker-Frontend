@@ -1,25 +1,41 @@
 // src/components/ResourceTypeList.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Grid2, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const ResourceTypeList = ({ resourceTypes }) => {
+const ResourceTypeList = () => {
    const navigate = useNavigate();
+   const [resourceTypes, setResourceTypes] = useState([]);
 
-   const handleSelectResourceType = (resourceTypeId) => {
-      navigate(`/resources`, { state: { resourceTypeId } });
+   useEffect(() => {
+      // Fetch all resource types
+      const fetchResourceTypes = async () => {
+         try {
+            const response = await axios.get('/api/resources/categories');
+            setResourceTypes(response.data);  // Assuming the API returns an array of categories with resource types
+         } catch (error) {
+            console.error("Error fetching resource types:", error);
+         }
+      };
+
+      fetchResourceTypes();
+   }, []);
+
+   const handleSelectResourceType = (category) => {
+      navigate(`/resources/categories/${category}/resource-types`);  // Navigating based on category
    };
 
    return (
       <Grid2 container spacing={3}>
-         {resourceTypes.map((resourceType) => (
-            <Grid2 item xs={12} sm={6} md={4} key={resourceType.id}>
+         {resourceTypes.map((category) => (
+            <Grid2 item xs={12} sm={6} md={4} key={category.category}>
                <Button
                   variant="contained"
                   fullWidth
-                  onClick={() => handleSelectResourceType(resourceType.id)}
+                  onClick={() => handleSelectResourceType(category.category)}
                >
-                  {resourceType.name}
+                  <Typography variant="h6">{category.category}</Typography> {/* Displaying category name */}
                </Button>
             </Grid2>
          ))}

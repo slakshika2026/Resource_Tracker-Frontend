@@ -1,18 +1,34 @@
 // src/components/AllocateResource.jsx
 import React, { useState } from "react";
 import { Button, TextField, Box, Typography } from "@mui/material";
-import api from "../api/api";
+import api from "../api/api"; // Assuming your api instance is correctly set up
 
 const AllocateResource = ({ resourceId }) => {
    const [projectId, setProjectId] = useState("");
+   const [loading, setLoading] = useState(false); // To manage loading state
+   const [error, setError] = useState(""); // To handle error messages
 
    const handleAllocate = async () => {
+      if (!projectId) {
+         alert("Please enter a Project ID.");
+         return;
+      }
+
+      setLoading(true);
+      setError(""); // Reset the error before making the request
+
       try {
-         await api.post(`/resources/${resourceId}/allocate`, { projectId });
-         alert("Resource allocated successfully!");
+         // Assuming your API follows this endpoint pattern for allocation
+         const response = await api.post(`/resources/${resourceId}/allocate`, { projectId });
+
+         if (response.status === 200) {
+            alert("Resource allocated successfully!");
+         }
       } catch (error) {
          console.error("Error allocating resource:", error);
-         alert("Error allocating resource.");
+         setError("Error allocating resource.");
+      } finally {
+         setLoading(false);
       }
    };
 
@@ -27,8 +43,15 @@ const AllocateResource = ({ resourceId }) => {
             onChange={(e) => setProjectId(e.target.value)}
             sx={{ mt: 2 }}
          />
-         <Button variant="contained" color="primary" onClick={handleAllocate} sx={{ mt: 2 }}>
-            Allocate Resource
+         {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>} {/* Show error message */}
+         <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAllocate}
+            sx={{ mt: 2 }}
+            disabled={loading} // Disable button while request is loading
+         >
+            {loading ? "Allocating..." : "Allocate Resource"}
          </Button>
       </Box>
    );
