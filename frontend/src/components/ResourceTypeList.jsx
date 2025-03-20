@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Grid2, Button, Typography, CircularProgress, Container } from "@mui/material";
+import {
+   Grid2,
+   Button,
+   Typography,
+   CircularProgress,
+   Container,
+} from "@mui/material";
 import api from "../api/api";
 import ResourceList from "./ResourceList"; // Import the ResourceList component
 
-const ResourceType = ({ category }) => {
+const ResourceType = ({ category, projectId }) => {
    const [resourceTypes, setResourceTypes] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState("");
    const [selectedResourceType, setSelectedResourceType] = useState(null); // State for selected resource type
-
+   console.log("Project IDree:", projectId); // Debugging log
    useEffect(() => {
       const fetchResourceTypes = async () => {
          try {
@@ -27,11 +33,10 @@ const ResourceType = ({ category }) => {
       };
 
       fetchResourceTypes();
-   }, [category]);  // Re-fetch resource types whenever category changes
+   }, [category]); // Re-fetch resource types whenever category changes
 
    const handleSelectResourceType = (resourceType) => {
-
-      setSelectedResourceType(resourceType);
+      setSelectedResourceType(resourceType); // Select a new resource type
    };
 
    if (loading) {
@@ -43,7 +48,11 @@ const ResourceType = ({ category }) => {
    }
 
    if (error) {
-      return <Typography color="error" align="center" sx={{ mt: 3 }}>{error}</Typography>;
+      return (
+         <Typography color="error" align="center" sx={{ mt: 3 }}>
+            {error}
+         </Typography>
+      );
    }
 
    return (
@@ -61,12 +70,10 @@ const ResourceType = ({ category }) => {
                      onClick={() => handleSelectResourceType(resource)}
                   >
                      {resource.name}
-
                   </Button>
 
                   <Typography variant="h7" align="center">
-                     resource_type_id:
-                     {resource.resource_type_id}
+                     resource_type_id: {resource.resource_type_id}
                   </Typography>
 
                   <Typography variant="body2">{resource.description}</Typography>
@@ -76,7 +83,11 @@ const ResourceType = ({ category }) => {
 
          {/* Render ResourceList component if a resource type is selected */}
          {selectedResourceType && (
-            <ResourceList resourceType={selectedResourceType} />
+            <ResourceList
+               key={selectedResourceType.resource_type_id}
+               resourceType={selectedResourceType}
+               projectId={projectId}
+            />
          )}
       </Container>
    );
