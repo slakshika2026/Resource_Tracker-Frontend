@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Typography, CircularProgress, Grid2 } from "@mui/material";
+import { Button, Typography, CircularProgress, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import CategoryList from "./CategoryList";
@@ -19,7 +19,7 @@ const ProjectList = () => {
             console.log("Projects fetched:", response.data);
             setProjects(response.data);
          } catch (err) {
-            setError("Failed to load projects: ${ err.message }");
+            setError(`Failed to load projects: ${err.message}`);
             console.error("Error fetching projects:", err);
          } finally {
             setLoading(false);
@@ -45,9 +45,9 @@ const ProjectList = () => {
    return (
       <div>
          {!selectedProject ? (
-            <Grid2 container spacing={3}>
+            <Stack spacing={3} alignItems="center">
                {projects.map((project) => (
-                  <Grid2 item xs={12} sm={6} md={4} key={project.project_id}>
+                  <Stack key={project.project_id} spacing={1} sx={{ width: "100%", maxWidth: 400 }}>
                      <Button
                         variant="outlined"
                         fullWidth
@@ -57,9 +57,9 @@ const ProjectList = () => {
                      </Button>
                      <Typography variant="body2">{project.description}</Typography>
                      <Typography variant="caption">{project.start_date}</Typography>
-                  </Grid2>
+                  </Stack>
                ))}
-            </Grid2>
+            </Stack>
          ) : (
             <CategoryList
                projectId={selectedProject}
