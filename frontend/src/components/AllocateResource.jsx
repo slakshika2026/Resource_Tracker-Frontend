@@ -1,28 +1,27 @@
-// src/components/AllocateResource.jsx
 import React, { useState } from "react";
 import { Button, TextField, Box, Typography } from "@mui/material";
-import api from "../api/api"; // Assuming your api instance is correctly set up
+import api from "../api/api";
 
-const AllocateResource = ({ resourceId }) => {
-   const [projectId, setProjectId] = useState("");
-   const [loading, setLoading] = useState(false); // To manage loading state
-   const [error, setError] = useState(""); // To handle error messages
+const AllocateResource = ({ resourceId, projectId }) => {
+   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState("");
+   const [successMessage, setSuccessMessage] = useState(""); // Track successful allocation
 
    const handleAllocate = async () => {
-      if (!projectId) {
-         alert("Please enter a Project ID.");
-         return;
-      }
-
       setLoading(true);
-      setError(""); // Reset the error before making the request
+      setError("");
+      setSuccessMessage("");
 
       try {
-         // Assuming your API follows this endpoint pattern for allocation
-         const response = await api.post(`/resources/${resourceId}/allocate`, { projectId });
+         // API call to allocate the resource
+         const response = await api.post(`/api/resources/${resourceId}/allocate_resource`,
+            {
+               project_id: projectId,
+            }
+         );
 
          if (response.status === 200) {
-            alert("Resource allocated successfully!");
+            setSuccessMessage("Resource allocated successfully!");
          }
       } catch (error) {
          console.error("Error allocating resource:", error);
@@ -33,28 +32,43 @@ const AllocateResource = ({ resourceId }) => {
    };
 
    return (
-      <Box sx={{ textAlign: "center", mt: 3 }}>
+      <Box
+         sx={{
+            textAlign: "center",
+            mt: 3,
+            border: "1px solid #ccc",
+            padding: 3,
+            borderRadius: 2,
+         }}
+      >
          <Typography variant="h5">Allocate Resource</Typography>
-         <TextField
-            label="Project ID"
-            variant="outlined"
-            fullWidth
-            value={projectId}
-            onChange={(e) => setProjectId(e.target.value)}
-            sx={{ mt: 2 }}
-         />
-         {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>} {/* Show error message */}
+         <Typography variant="body1" sx={{ mt: 1 }}>
+            Resource ID: {resourceId}, Project ID: {projectId}
+         </Typography>
+
+
+
+         {error && (
+            <Typography color="error" sx={{ mt: 2 }}>
+               {error}
+            </Typography>
+         )}
+         {successMessage && (
+            <Typography color="success" sx={{ mt: 2 }}>
+               {successMessage}
+            </Typography>
+         )}
+
          <Button
             variant="contained"
             color="primary"
             onClick={handleAllocate}
             sx={{ mt: 2 }}
-            disabled={loading} // Disable button while request is loading
+            disabled={loading}
          >
             {loading ? "Allocating..." : "Allocate Resource"}
          </Button>
       </Box>
    );
 };
-
 export default AllocateResource;

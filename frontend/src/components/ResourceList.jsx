@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Grid2, Button, Typography } from "@mui/material";
+import { Grid2, Button, Typography, Box } from "@mui/material";
 import api from "../api/api";
+import AllocateResource from "./AllocateResource"; // Import the AllocateResource component
 
-const ResourceList = ({ resourceType }) => {
+const ResourceList = ({ resourceType, projectId }) => {
    const [resourceItems, setResourceItems] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState("");
+   const [selectedResourceId, setSelectedResourceId] = useState(null);
+   console.log("pro", projectId); // Track selected resource ID
 
    useEffect(() => {
       const fetchResources = async () => {
          if (!resourceType) return;
 
          try {
-            const response = await api.get(`/api/resources/resource-types/${resourceType.resource_type_id}/resource_items`);
+            const response = await api.get(
+               `/api/resources/resource-types/${resourceType.resource_type_id}/resource_items`
+            );
 
             if (response.data.length > 0) {
                setResourceItems(response.data);
@@ -30,51 +35,72 @@ const ResourceList = ({ resourceType }) => {
       fetchResources();
    }, [resourceType]);
 
-   const handleAllocateResource = (resourceId) => {
-      // Handle resource allocation logic here
-      console.log(`Allocating resource with ID: ${resourceId}`);
+   const handleSelectResource = (resourceId) => {
+      console.log("Selected resource ID:", resourceId); // Debugging log
+      setSelectedResourceId(resourceId); // Set the selected resource ID
    };
 
    if (loading) {
       return (
-         <Grid2 container justifyContent="center" sx={{ mt: 3 }}>
+         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
             <Typography>Loading resources...</Typography>
-         </Grid2>
+         </Box>
       );
    }
 
    if (error) {
-      return <Typography color="error" align="center" sx={{ mt: 3 }}>{error}</Typography>;
+      return (
+         <Typography color="error" align="center" sx={{ mt: 3 }}>
+            {error}
+         </Typography>
+      );
    }
 
    return (
-      <Grid2 container spacing={3} justifyContent="center" sx={{ mt: 5 }}>
-         {resourceItems.length > 0 ? (
-            resourceItems.map((resourceItem) => (
-               <Grid2 item xs={12} sm={6} md={4} key={resourceItem.id}>
-                  <Button
-                     variant="outlined"
-                     fullWidth
-                     onClick={() => handleAllocateResource(resourceItem.id)}
+      <Box sx={{ mt: 5 }}>
+         <Grid2 container spacing={3} justifyContent="center">
+            {resourceItems.length > 0 ? (
+               resourceItems.map((resourceItem) => (
+                  <Grid2
+                     item
+                     xs={12}
+                     sm={6}
+                     md={4}
+                     key={resourceItem.resource_item_id}
                   >
-                     {resourceItem.serial_number}
-                  </Button>
-                  {resourceItem.serial_number}
-                  {resourceItem.status}
-               <br/>
-                  <Typography variant="h7" align="center">
-                     allocated at
-                     {resourceItem.allocated_at}
-                  </Typography>
+                     <Button
+                        variant="outlined"
+                        fullWidth
+                        onClick={() =>
+                           handleSelectResource(resourceItem.resource_item_id)
+                        }
+                     >
+                        {resourceItem.serial_number}
+                     </Button>
+                     <Typography variant="body2">
+                        Status: {resourceItem.status}
+                     </Typography>
+                     <Typography variant="body2">
+                        Allocated at: {resourceItem.allocated_at}
+                     </Typography>
+                  </Grid2>
+               ))
+            ) : (
+               <Typography variant="h6" color="textSecondary" align="center">
+                  No resources available.
+               </Typography>
+            )}
+         </Grid2>
 
-               </Grid2>
-   ))
-         ) : (
-   <Typography variant="h6" color="textSecondary" align="center">
-      No resources available.
-   </Typography>
-)}
-      </Grid2 >
+         {/* Render AllocateResource component if a resource is selected */}
+         {selectedResourceId && (
+            <AllocateResource
+               key={selectedResourceId.resourceId}
+               resourceId={selectedResourceId}
+               projectId={projectId}
+            />
+         )}
+      </Box>
    );
 };
 

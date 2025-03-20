@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button, Typography, CircularProgress, Grid2 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +19,7 @@ const ProjectList = () => {
             console.log("Projects fetched:", response.data);
             setProjects(response.data);
          } catch (err) {
-            setError(`Failed to load projects: ${err.message}`);
+            setError("Failed to load projects: ${ err.message }");
             console.error("Error fetching projects:", err);
          } finally {
             setLoading(false);
@@ -31,6 +30,7 @@ const ProjectList = () => {
    }, []);
 
    const handleSelectProject = (projectId) => {
+      console.log("Selected project ID:", projectId); // Debugging log
       setSelectedProject(projectId); // Store selected project
    };
 
@@ -61,7 +61,10 @@ const ProjectList = () => {
                ))}
             </Grid2>
          ) : (
-            <CategoryList projectId={selectedProject} /> // Render category list for selected project
+            <CategoryList
+               projectId={selectedProject}
+               setSelectedProject={setSelectedProject}
+            /> // Render category list for selected project
          )}
       </div>
    );
