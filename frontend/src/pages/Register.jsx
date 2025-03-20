@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Container, TextField, Button, Typography, Box } from "@mui/material";
-import api from "../api/api";
+import { Container, TextField, Button, Typography, Box, Link, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api";
 
 const Register = () => {
    const [form, setForm] = useState({
       name: "",
       email: "",
       password: "",
-      role: "", // Added role for registration
+      role: "",
    });
    const [error, setError] = useState(null);
    const navigate = useNavigate();
@@ -19,15 +19,27 @@ const Register = () => {
 
    const handleRegister = async () => {
       try {
-         const response = await api.post("api/auth/register", form); // Backend register endpoint
+         const response = await api.post("api/auth/register", form);
+
          if (response.status === 201) {
             navigate("/"); // Redirect to login page on successful registration
-         } else {
-            setError(response.data.message || "Registration failed.");
          }
       } catch (error) {
-         console.log(error);
-         setError("An error occurred. Please try again.");
+         if (error.response) {
+            // Server responded with an error
+            if (error.response.status === 400) {
+               setError("All fields are required (name, email, password, role). Please fill in all details.");
+            } else if (error.response.status === 409) {
+               setError("This email is already registered. Try logging in instead.");
+            } else if (error.response.status === 500) {
+               setError("Server error occurred while registering. Please try again later.");
+            } else {
+               setError(error.response.data.message || "Registration failed.");
+            }
+         } else {
+            // No response from server
+            setError("Network error. Please check your internet connection.");
+         }
       }
    };
 
@@ -69,10 +81,23 @@ const Register = () => {
             value={form.role}
             onChange={handleChange}
          />
-         {error && <Typography color="error">{error}</Typography>}
+
+         {/* Show error message using MUI Alert */}
+         {error && <Alert severity="error">{error}</Alert>}
+
          <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleRegister}>
             Register
          </Button>
+
+         {/* Already registered? Login link */}
+         <Box sx={{ textAlign: "center", mt: 2 }}>
+            <Typography variant="body2">
+               Already registered?{" "}
+               <Link href="/" color="primary" underline="hover">
+                  Login
+               </Link>
+            </Typography>
+         </Box>
       </Container>
    );
 };

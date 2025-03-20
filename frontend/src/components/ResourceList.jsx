@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid2, Button, Typography, Box } from "@mui/material";
+import { Button, Typography, Box, Stack } from "@mui/material";
 import api from "../api/api";
 import AllocateResource from "./AllocateResource"; // Import the AllocateResource component
 
@@ -58,18 +58,13 @@ const ResourceList = ({ resourceType, projectId }) => {
 
    return (
       <Box sx={{ mt: 5 }}>
-         <Grid2 container spacing={3} justifyContent="center">
+         <Stack spacing={3} justifyContent="center">
             {resourceItems.length > 0 ? (
                resourceItems.map((resourceItem) => (
-                  <Grid2
-                     item
-                     xs={12}
-                     sm={6}
-                     md={4}
-                     key={resourceItem.resource_item_id}
-                  >
+                  <Box key={resourceItem.resource_item_id}>
                      <Button
-                        variant="outlined"
+                        color={selectedResourceId === resourceItem.resource_item_id ? "success" : "default"}
+                        variant={selectedResourceId === resourceItem.resource_item_id ? "contained" : "outlined"}
                         fullWidth
                         onClick={() =>
                            handleSelectResource(resourceItem.resource_item_id)
@@ -77,20 +72,14 @@ const ResourceList = ({ resourceType, projectId }) => {
                      >
                         {resourceItem.serial_number}
                      </Button>
-                     <Typography variant="body2">
-                        Status: {resourceItem.status}
-                     </Typography>
-                     <Typography variant="body2">
-                        Allocated at: {resourceItem.allocated_at}
-                     </Typography>
-                  </Grid2>
+                  </Box>
                ))
             ) : (
                <Typography variant="h6" color="textSecondary" align="center">
                   No resources available.
                </Typography>
             )}
-         </Grid2>
+         </Stack>
 
          {/* Render AllocateResource component if a resource is selected */}
          {selectedResourceId && (

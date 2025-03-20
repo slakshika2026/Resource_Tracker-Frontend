@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, TextField, Button, Typography, Box } from "@mui/material";
+import { Container, TextField, Button, Typography, Box, Link, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
@@ -44,10 +44,23 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
          />
-         {error && <Typography color="error">{error}</Typography>}
+
+         {/* Show error message using MUI Alert */}
+         {error && <Alert severity="error">{error}</Alert>}
+
          <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleLogin}>
             Login
          </Button>
+
+         {/* Not registered? Sign up link */}
+         <Box sx={{ textAlign: "center", mt: 2 }}>
+            <Typography variant="body2">
+               Not registered?{" "}
+               <Link href="/register" color="primary" underline="hover">
+                  Sign up
+               </Link>
+            </Typography>
+         </Box>
       </Container>
    );
 };
