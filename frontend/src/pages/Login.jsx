@@ -12,7 +12,6 @@ const Login = () => {
    const handleLogin = async () => {
       try {
          const response = await api.post("api/auth/login", { email, password }); // Backend login endpoint
-         // Expect the response to contain 'message' and 'token'
          if (response.data.token) {
             localStorage.setItem("token", response.data.token); // Store the token for authenticated routes
             navigate("/dashboard");
@@ -25,9 +24,11 @@ const Login = () => {
    };
 
    return (
-      <Container maxWidth="xs">
+      <Container maxWidth="xs" sx={{ borderRadius: 2, p: 3 }}>
          <Box sx={{ textAlign: "center", mt: 5 }}>
-            <Typography variant="h5">Login</Typography>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#205781" }}>
+               Login
+            </Typography>
          </Box>
          <TextField
             fullWidth
@@ -35,6 +36,16 @@ const Login = () => {
             margin="normal"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            sx={{
+               backgroundColor: "#FFFFFF", // White background for inputs
+               borderRadius: 1,
+               '& .MuiInputBase-root': {
+                  color: "#205781", // Dark Blue text color
+               },
+               '& .MuiInputLabel-root': {
+                  color: "#205781", // Dark Blue label color
+               },
+            }}
          />
          <TextField
             fullWidth
@@ -43,20 +54,42 @@ const Login = () => {
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{
+               backgroundColor: "#FFFFFF", // White background for inputs
+               borderRadius: 1,
+               '& .MuiInputBase-root': {
+                  color: "#205781", // Dark Blue text color
+               },
+               '& .MuiInputLabel-root': {
+                  color: "#205781", // Dark Blue label color
+               },
+            }}
          />
 
          {/* Show error message using MUI Alert */}
-         {error && <Alert severity="error">{error}</Alert>}
+         {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
 
-         <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleLogin}>
+         <Button
+            fullWidth
+            variant="contained"
+            sx={{
+               mt: 2,
+               backgroundColor: "#205781", // Dark Blue button background
+               color: "#FFFFFF", // White text color
+               '&:hover': {
+                  backgroundColor: "#4F959D", // Muted Teal background on hover
+               },
+            }}
+            onClick={handleLogin}
+         >
             Login
          </Button>
 
          {/* Not registered? Sign up link */}
          <Box sx={{ textAlign: "center", mt: 2 }}>
-            <Typography variant="body2">
+            <Typography variant="body2" sx={{ color: "#4F959D" }}>
                Not registered?{" "}
-               <Link href="/register" color="primary" underline="hover">
+               <Link href="/register" sx={{ color: "#205781", textDecoration: "underline" }}>
                   Sign up
                </Link>
             </Typography>

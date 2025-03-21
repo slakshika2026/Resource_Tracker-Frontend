@@ -46,7 +46,9 @@ const Register = () => {
    return (
       <Container maxWidth="xs">
          <Box sx={{ textAlign: "center", mt: 5 }}>
-            <Typography variant="h5">Register</Typography>
+            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#205781" }}>
+               Register
+            </Typography>
          </Box>
          <TextField
             fullWidth
@@ -55,6 +57,16 @@ const Register = () => {
             name="name"
             value={form.name}
             onChange={handleChange}
+            sx={{
+               backgroundColor: "#FFFFFF", // White background for inputs
+               borderRadius: 1,
+               '& .MuiInputBase-root': {
+                  color: "#205781", // Dark Blue text color
+               },
+               '& .MuiInputLabel-root': {
+                  color: "#205781", // Dark Blue label color
+               },
+            }}
          />
          <TextField
             fullWidth
@@ -63,6 +75,16 @@ const Register = () => {
             name="email"
             value={form.email}
             onChange={handleChange}
+            sx={{
+               backgroundColor: "#FFFFFF", // White background for inputs
+               borderRadius: 1,
+               '& .MuiInputBase-root': {
+                  color: "#205781", // Dark Blue text color
+               },
+               '& .MuiInputLabel-root': {
+                  color: "#205781", // Dark Blue label color
+               },
+            }}
          />
          <TextField
             fullWidth
@@ -72,6 +94,16 @@ const Register = () => {
             name="password"
             value={form.password}
             onChange={handleChange}
+            sx={{
+               backgroundColor: "#FFFFFF", // White background for inputs
+               borderRadius: 1,
+               '& .MuiInputBase-root': {
+                  color: "#205781", // Dark Blue text color
+               },
+               '& .MuiInputLabel-root': {
+                  color: "#205781", // Dark Blue label color
+               },
+            }}
          />
          <TextField
             fullWidth
@@ -80,20 +112,42 @@ const Register = () => {
             name="role"
             value={form.role}
             onChange={handleChange}
+            sx={{
+               backgroundColor: "#FFFFFF", // White background for inputs
+               borderRadius: 1,
+               '& .MuiInputBase-root': {
+                  color: "#205781", // Dark Blue text color
+               },
+               '& .MuiInputLabel-root': {
+                  color: "#205781", // Dark Blue label color
+               },
+            }}
          />
 
          {/* Show error message using MUI Alert */}
-         {error && <Alert severity="error">{error}</Alert>}
+         {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
 
-         <Button fullWidth variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleRegister}>
+         <Button
+            fullWidth
+            variant="contained"
+            sx={{
+               mt: 2,
+               backgroundColor: "#205781", // Dark Blue button background
+               color: "#FFFFFF", // White text color
+               '&:hover': {
+                  backgroundColor: "#4F959D", // Muted Teal background on hover
+               },
+            }}
+            onClick={handleRegister}
+         >
             Register
          </Button>
 
          {/* Already registered? Login link */}
          <Box sx={{ textAlign: "center", mt: 2 }}>
-            <Typography variant="body2">
+            <Typography variant="body2" sx={{ color: "#4F959D" }}>
                Already registered?{" "}
-               <Link href="/" color="primary" underline="hover">
+               <Link href="/" sx={{ color: "#205781", textDecoration: "underline" }}>
                   Login
                </Link>
             </Typography>
