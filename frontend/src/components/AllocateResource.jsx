@@ -61,7 +61,7 @@ const AllocateResource = ({ resourceId, projectId }) => {
 
          <Button
             variant="contained"
-            color="primary"
+            color="#4F959D"
             onClick={handleAllocate}
             sx={{ mt: 2 }}
             disabled={loading}

@@ -66,9 +66,18 @@ const ResourceList = ({ resourceType, projectId }) => {
                         color={selectedResourceId === resourceItem.resource_item_id ? "success" : "default"}
                         variant={selectedResourceId === resourceItem.resource_item_id ? "contained" : "outlined"}
                         fullWidth
-                        onClick={() =>
-                           handleSelectResource(resourceItem.resource_item_id)
-                        }
+                        sx={{
+                           py: 1,
+                           borderColor: "#333333", // Dark Gray border
+                           color: selectedResourceId === resourceItem.resource_item_id ? "#FFFFFF" : "#333333", // White text when selected
+                           backgroundColor: selectedResourceId === resourceItem.resource_item_id ? "#333333" : "transparent", // Dark Gray background when selected
+                           '&:hover': {
+                              borderColor: "#666666", // Lighter Gray border on hover
+                              color: selectedResourceId === resourceItem.resource_item_id ? "#FFFFFF" : "#666666", // Lighter Gray text on hover
+                              backgroundColor: selectedResourceId === resourceItem.resource_item_id ? "#333333" : "transparent", // Dark Gray background on hover when selected
+                           },
+                        }}
+                        onClick={() => handleSelectResource(resourceItem.resource_item_id)}
                      >
                         {resourceItem.serial_number}
                      </Button>
@@ -84,7 +93,7 @@ const ResourceList = ({ resourceType, projectId }) => {
          {/* Render AllocateResource component if a resource is selected */}
          {selectedResourceId && (
             <AllocateResource
-               key={selectedResourceId.resourceId}
+               key={selectedResourceId}
                resourceId={selectedResourceId}
                projectId={projectId}
             />

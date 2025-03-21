@@ -3,8 +3,10 @@ import {
    Button,
    Typography,
    CircularProgress,
-   Grid,
    Stack,
+   Grid,
+   Paper,
+   Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
@@ -16,19 +18,16 @@ const ProjectList = () => {
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
    const [selectedProject, setSelectedProject] = useState(null);
-   const [showAllocatedResources, setShowAllocatedResources] = useState(false); // State to toggle AllocatedResourceList
+   const [showAllocatedResources, setShowAllocatedResources] = useState(false);
    const navigate = useNavigate();
 
-   // Fetch projects from the backend
    useEffect(() => {
       const fetchProjects = async () => {
          try {
             const response = await api.get("api/projects");
-            console.log("Projects fetched:", response.data);
             setProjects(response.data);
          } catch (err) {
-            setError('Failed to load projects: ${err.message }');
-            console.error("Error fetching projects:", err);
+            setError(`Failed to load projects: ${err.message}`);
          } finally {
             setLoading(false);
          }
@@ -37,19 +36,17 @@ const ProjectList = () => {
       fetchProjects();
    }, []);
 
-   const handleSelectProject = (projectId) => {
-      console.log("Selected project ID:", projectId);
-      setSelectedProject(projectId);
-      setShowAllocatedResources(false); // Reset allocated resource list view
+   const handleSelectProject = (projectId, projectName) => {
+      setSelectedProject({ id: projectId, name: projectName });
+      setShowAllocatedResources(false);
    };
 
    const handleShowAllocatedResources = () => {
-      console.log("Showing allocated resources for project:", selectedProject);
       setShowAllocatedResources(true);
    };
 
    if (loading) {
-      return <CircularProgress />;
+      return <CircularProgress sx={{ color: "#0077B5" }} />;
    }
 
    if (error) {
@@ -57,43 +54,112 @@ const ProjectList = () => {
    }
 
    return (
-      <div>
+      <Box sx={{ padding: 3, maxWidth: "1000px", margin: "auto" }}>
+         {/* Selected project info */}
+         {selectedProject && (
+            <Typography
+               variant="h6"
+               sx={{
+                  textAlign: "center",
+                  mt: 2,
+                  color: "#333333",
+
+               }}
+            >
+               Selected Project Name: {selectedProject.name}
+            </Typography>
+         )}
+
+         {/* Project list */}
          {!selectedProject ? (
-            <Stack spacing={3} alignItems="center">
+            <Grid container spacing={2} justifyContent="center">
                {projects.map((project) => (
-                  <Stack
-                     key={project.project_id}
-                     spacing={1}
-                     sx={{ width: "100%", maxWidth: 400 }}
-                  >
-                     <Button
-                        variant="outlined"
-                        fullWidth
-                        onClick={() => handleSelectProject(project.project_id)}
+                  <Grid item xs={12} sm={6} md={4} key={project.project_id}>
+                     <Paper
+                        elevation={3}
+                        sx={{
+                           padding: 2,
+                           backgroundColor: "#FFFFFF",
+                           borderRadius: "8px", // Rounded corners
+                           transition: "all 0.3s ease-in-out",
+                           "&:hover": {
+                              boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)",
+                              transform: "translateY(-3px)", // Subtle lift effect
+                           },
+                        }}
                      >
-                        {project.name}
-                     </Button>
-                     <Typography variant="body2">{project.description}</Typography>
-                     <Typography variant="caption">{project.start_date}</Typography>
-                  </Stack>
+                        <Button
+                           variant="contained"
+                           fullWidth
+                           onClick={() =>
+                              handleSelectProject(project.project_id, project.name)
+                           }
+                           sx={{
+                              backgroundColor: "#005582",
+                              "&:hover": { backgroundColor: "#4F959D" },
+                              color: "#FFFFFF",
+                              fontWeight: "bold",
+                              borderRadius: "20px", // Rounded button like LinkedIn
+                              textTransform: "none",
+                              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                           }}
+                        >
+                           {project.name}
+                        </Button>
+
+                        <Typography
+                           variant="body2"
+                           sx={{ color: "#333333", mt: 2, fontWeight: "500" }}
+                        >
+                           {project.description}
+                        </Typography>
+
+                        <Typography
+                           variant="caption"
+                           sx={{ color: "#86888A", mt: 1, display: "block" }}
+                        >
+                           Created at:{" "}
+                           {project.start_date
+                              ? new Date(project.start_date).toLocaleDateString("en-US", {
+                                 weekday: "short",
+                                 year: "numeric",
+                                 month: "short",
+                                 day: "numeric",
+                              })
+                              : "N/A"}
+                        </Typography>
+                     </Paper>
+                  </Grid>
                ))}
-            </Stack>
+            </Grid>
          ) : showAllocatedResources ? (
-            // Render AllocatedResourceList when "Allocated Resources" is clicked
-            <AllocatedResourceList projectId={selectedProject} />
+            <AllocatedResourceList projectId={selectedProject.id} />
          ) : (
             <>
-               <CategoryList projectId={selectedProject} />
-               <Button
-                  variant="outlined"
-                  onClick={handleShowAllocatedResources}
-                  sx={{ mt: 2 }}
-               >
-                  Allocated Resources
-               </Button>
+               <CategoryList projectId={selectedProject.id} />
+               <Stack spacing={2} sx={{ mt: 3 }} alignItems="center">
+                  <Button
+                     variant="outlined"
+                     onClick={handleShowAllocatedResources}
+                     sx={{
+                        borderColor: "#0077B5",
+                        color: "#0077B5",
+                        fontWeight: "bold",
+                        textTransform: "none",
+                        borderRadius: "20px", // Rounded button
+                        "&:hover": {
+                           borderColor: "#005582",
+                           color: "#005582",
+                           boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.15)",
+                        },
+                     }}
+                  >
+                     View Allocated Resources
+                  </Button>
+               </Stack>
             </>
          )}
-      </div>
+      </Box>
    );
 };
 

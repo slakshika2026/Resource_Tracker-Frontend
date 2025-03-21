@@ -5,6 +5,7 @@ import {
    Typography,
    CircularProgress,
    Container,
+   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
@@ -17,6 +18,7 @@ const CategoryList = ({ projectId }) => {
    const [error, setError] = useState("");
    const [selectedCategory, setSelectedCategory] = useState(null); // State to hold selected category
    console.log("Project ID:", projectId); // Debugging log
+
    useEffect(() => {
       const fetchCategories = async () => {
          try {
@@ -33,7 +35,7 @@ const CategoryList = ({ projectId }) => {
             }
          } catch (err) {
             console.error("Error fetching categories:", err);
-            setError('Failed to load categories: ${ err.message }');
+            setError(`Failed to load categories: ${err.message}`);
          } finally {
             setLoading(false);
          }
@@ -57,7 +59,7 @@ const CategoryList = ({ projectId }) => {
 
    if (error) {
       return (
-         <Typography color="error" align="center" sx={{ mt: 3 }}>
+         <Typography color="error" align="center" sx={{ mt: 3, color: "#333333" }}>
             {error}
          </Typography>
       );
@@ -65,16 +67,29 @@ const CategoryList = ({ projectId }) => {
 
    return (
       <Container>
-         <Typography variant="h5" align="center" gutterBottom>
+         <Typography variant="body1" align="center" gutterBottom sx={{ color: "#333333" }}>
             Select a Category
          </Typography>
          <Grid2 container spacing={3} justifyContent="center">
             {categories.map((category, index) => (
                <Grid2 item xs={12} sm={6} md={4} key={index}>
                   <Button
-                     variant="outlined"
+                     variant={selectedCategory === category.category ? "contained" : "outlined"} // Change variant based on selection
                      fullWidth
-                     sx={{ py: 2 }}
+                     sx={{
+                        py: 1,
+                        borderColor: "#666666", // Dark Gray border
+                        color: selectedCategory === category.category ? "#ffffff" : "#333333", // White text when selected, Dark Gray when not
+                        backgroundColor: selectedCategory === category.category ? "#4F959D" : "transparent", // LinkedIn Blue background when selected
+                        '&:hover': {
+                           borderColor: "#888888", // Medium Gray border on hover
+                           color: selectedCategory === category.category ? "#ffffff" : "#555555", // Darker text on hover
+                          
+                        },
+                        fontWeight: "bold", // Bold text
+                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", // Small shadow
+                        borderRadius: "8px", // Slightly rounded corners
+                     }}
                      onClick={() => handleSelectCategory(category.category)}
                   >
                      {category.category}
@@ -85,7 +100,9 @@ const CategoryList = ({ projectId }) => {
 
          {/* Display ResourceType component if category is selected */}
          {selectedCategory && (
-            <ResourceTypeList category={selectedCategory} projectId={projectId} /> // Pass selected category as a prop
+            <Stack spacing={3} mt={3}>
+               <ResourceTypeList category={selectedCategory} projectId={projectId} />
+            </Stack>
          )}
       </Container>
    );
