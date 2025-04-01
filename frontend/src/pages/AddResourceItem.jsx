@@ -1,7 +1,8 @@
 // src/pages/AddResourceItem.jsx
 import React, { useState } from "react";
 import { Container, TextField, Button, Typography, Box } from "@mui/material";
-import api from "../api/api"; 
+import api from "../api/api";
+import Navbar from "../components/Navbar";
 
 const AddResourceItem = () => {
    const [resourceTypeId, setResourceTypeId] = useState("");
@@ -11,13 +12,13 @@ const AddResourceItem = () => {
    const [success, setSuccess] = useState(null);
 
    const handleSubmit = async (e) => {
-      e.preventDefault();
+      e.preventDefault(); //Form submitted, but page won't refresh
 
-     
+
       const statusValue = status ? status : 'available';
 
       try {
-      
+
          const response = await api.post("/api/resources", {
             resource_type_id: resourceTypeId,
             serial_number: serialNumber,
@@ -26,9 +27,9 @@ const AddResourceItem = () => {
 
          if (response.status === 201) {
             setSuccess("Resource item added successfully!");
-            setResourceTypeId(""); 
-            setSerialNumber("");    
-            setStatus('');          
+            setResourceTypeId("");
+            setSerialNumber("");
+            setStatus('');
          }
       } catch (err) {
          setError("Failed to add resource item. Please try again.");
@@ -38,6 +39,9 @@ const AddResourceItem = () => {
 
    return (
       <Container>
+         <div>
+            <Navbar />
+         </div>
          <Typography variant="h4" sx={{ textAlign: "center", my: 2 }}>
             Add Resource Item
          </Typography>
