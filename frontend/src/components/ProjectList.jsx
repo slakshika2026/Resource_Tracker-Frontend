@@ -13,28 +13,28 @@ import api from "../api/api";
 import CategoryList from "./CategoryList";
 import AllocatedResourceList from "./AllocatedResourceList";
 
-const ProjectList = () => {
-   const [projects, setProjects] = useState([]);
-   const [loading, setLoading] = useState(true);
+const ProjectList = ({ projects,loading }) => {
+   // const [projects, setProjects] = useState([]);
+   // const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);
    const [selectedProject, setSelectedProject] = useState(null);
    const [showAllocatedResources, setShowAllocatedResources] = useState(false);
    const navigate = useNavigate();
 
-   useEffect(() => {
-      const fetchProjects = async () => {
-         try {
-            const response = await api.get("api/projects");
-            setProjects(response.data);
-         } catch (err) {
-            setError(`Failed to load projects: ${err.message}`);
-         } finally {
-            setLoading(false);
-         }
-      };
+   // useEffect(() => {
+   //    const fetchProjects = async () => {
+   //       try {
+   //          const response = await api.get("api/projects");
+   //          setProjects(response.data);
+   //       } catch (err) {
+   //          setError(`Failed to load projects: ${err.message}`);
+   //       } finally {
+   //          setLoading(false);
+   //       }
+   //    };
 
-      fetchProjects();
-   }, []);
+   //    fetchProjects();
+   // }, []);
 
    const handleSelectProject = (projectId, projectName) => {
       setSelectedProject({ id: projectId, name: projectName });

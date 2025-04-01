@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Container, Typography, TextField, Button, Stack, Snackbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";  // Assuming you have an api.js file for API calls
+import Navbar from "../components/Navbar";
 
 const AddProject = () => {
    const [projectName, setProjectName] = useState("");
@@ -60,21 +61,28 @@ const AddProject = () => {
 
    return (
       <Container sx={{ maxWidth: 600, mt: 5 }}>
-         <Typography variant="h5" align="center" gutterBottom sx={{ color: "#333333" }}>
+         <div >
+            <Navbar />
+         </div>
+         <Typography variant="h5" align="center" gutterBottom sx={{ color: "#333333", mt: 3 }}>
             Add New Project
          </Typography>
 
-         {error && (
-            <Typography color="error" align="center" sx={{ mb: 2 }}>
-               {error}
-            </Typography>
-         )}
+         {
+            error && (
+               <Typography color="error" align="center" sx={{ mb: 2 }}>
+                  {error}
+               </Typography>
+            )
+         }
 
-         {successMessage && (
-            <Typography color="success" align="center" sx={{ mb: 2 }}>
-               {successMessage}
-            </Typography>
-         )}
+         {
+            successMessage && (
+               <Typography color="success" align="center" sx={{ mb: 2 }}>
+                  {successMessage}
+               </Typography>
+            )
+         }
 
          <form onSubmit={handleAddProject}>
             <Stack spacing={2}>
@@ -114,7 +122,7 @@ const AddProject = () => {
             message={successMessage}
             autoHideDuration={3000}
          />
-      </Container>
+      </Container >
    );
 };
 
