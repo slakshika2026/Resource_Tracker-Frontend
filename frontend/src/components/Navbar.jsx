@@ -1,46 +1,58 @@
 import React, { useState, useEffect } from "react";
 import { AppBar, Toolbar, Typography, Button, Box, Drawer, List, ListItem, ListItemText, Divider, IconButton } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu"; // To toggle sidebar
+import MenuIcon from "@mui/icons-material/Menu"; // Sidebar toggle icon
+import { jwtDecode } from "jwt-decode";
+import DropdownMenu from "./DropdownMenu";
+
 
 const Navbar = () => {
-   const [username, setUsername] = useState(null);
+   const [username, setUsername] = useState(null); // State to hold the username
    const [openSidebar, setOpenSidebar] = useState(false); // Sidebar state
    const navigate = useNavigate();
 
    useEffect(() => {
-      // Retrieve user from localStorage (or replace with your auth state logic)
-      const storedUser = localStorage.getItem("token");
-      if (storedUser) {
-         setUsername(storedUser);
+      const storedToken = localStorage.getItem("token"); // Get the token from localStorage
+      if (storedToken) {
+         try {
+            const decodedToken = jwtDecode(storedToken); // Decode the JWT token
+            setUsername(decodedToken.name); // Set the username from the decoded token
+         } catch (error) {
+            console.error("Error decoding token:", error); // Error handling if token is invalid
+         }
       }
    }, []);
 
    const handleSidebarToggle = () => {
-      setOpenSidebar(!openSidebar);
+      setOpenSidebar(!openSidebar); // Toggle sidebar visibility
    };
 
    const handleNavigate = (path) => {
-      navigate(path); // Navigate to other pages
+      navigate(path); // Navigate to the specified path
       setOpenSidebar(false); // Close sidebar after navigation
+   };
+
+   const handleLogout = () => {
+      localStorage.removeItem("token"); // Clear the token from localStorage
+      setUsername(null); // Clear the username state
+      navigate("/login"); // Redirect to login page
    };
 
    return (
       <AppBar
          position="static"
          sx={{
-            background: "linear-gradient(90deg, #205781, #4F959D)", // Dark Blue to Muted Teal gradient
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Subtle shadow for a soft effect
+            background: "linear-gradient(90deg, #205781, #4F959D)", // Gradient background
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Subtle shadow
          }}
       >
          <Toolbar sx={{ display: "flex", justifyContent: "space-between", padding: "0 16px" }}>
-            {/* Drawer icon on the left side */}
-            <IconButton
-               onClick={handleSidebarToggle}
-               sx={{ color: "#FFFFFF" }}
-            >
+            {/* Sidebar Toggle Button */}
+            <IconButton onClick={handleSidebarToggle} sx={{ color: "#FFFFFF" }}>
                <MenuIcon />
             </IconButton>
+
+
 
             <Typography
                variant="h6"
@@ -49,7 +61,7 @@ const Navbar = () => {
                   fontWeight: "bold",
                   letterSpacing: 1.5,
                   color: "#FFFFFF", // White text color
-                  textAlign: "center", // Center the title
+                  textAlign: "center", // Center title
                }}
             >
                Resource Allocation and Tracking System
@@ -72,6 +84,12 @@ const Navbar = () => {
                >
                   Dashboard
                </Button>
+
+               {/* User Authentication and Dropdown */}
+               <Box sx={{ display: "flex", gap: 2 }}>
+                  <DropdownMenu username={username} handleLogout={handleLogout} />
+               </Box>
+
                {!username && (
                   <>
                      <Button
@@ -149,3 +167,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

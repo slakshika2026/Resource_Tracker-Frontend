@@ -43,6 +43,7 @@ const Register = () => {
       }
    };
 
+
    return (
       <Container maxWidth="xs">
          <Box sx={{ textAlign: "center", mt: 5 }}>

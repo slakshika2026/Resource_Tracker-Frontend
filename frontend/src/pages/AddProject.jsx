@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Container, Typography, TextField, Button, Stack, Snackbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";  // Assuming you have an api.js file for API calls
-import Navbar from "../components/Navbar";
+
 
 const AddProject = () => {
    const [projectName, setProjectName] = useState("");
@@ -61,9 +61,6 @@ const AddProject = () => {
 
    return (
       <Container sx={{ maxWidth: 600, mt: 5 }}>
-         <div >
-            <Navbar />
-         </div>
          <Typography variant="h5" align="center" gutterBottom sx={{ color: "#333333", mt: 3 }}>
             Add New Project
          </Typography>
