@@ -14,6 +14,12 @@ const Login = () => {
          const response = await api.post("api/auth/login", { email, password }); // Backend login endpoint
          if (response.data.token) {
             localStorage.setItem("token", response.data.token); // Store the token for authenticated routes
+            // Retrieve name from localStorage (set during registration)
+         const storedName = localStorage.getItem("username");
+         if (storedName) {
+            localStorage.setItem("username", storedName); // Ensure the name persists
+         }
+
             navigate("/dashboard");
          } else {
             setError(response.data.message || "Invalid credentials. Please try again.");

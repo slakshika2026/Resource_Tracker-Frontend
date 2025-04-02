@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Container, TextField, Button, Typography, Box } from "@mui/material";
 import api from "../api/api";
-import Navbar from "../components/Navbar";
 
 const AddResourceItem = () => {
    const [resourceTypeId, setResourceTypeId] = useState("");
@@ -39,9 +38,6 @@ const AddResourceItem = () => {
 
    return (
       <Container>
-         <div>
-            <Navbar />
-         </div>
          <Typography variant="h4" sx={{ textAlign: "center", my: 2 }}>
             Add Resource Item
          </Typography>

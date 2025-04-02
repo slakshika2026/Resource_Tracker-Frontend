@@ -1,91 +1,84 @@
 import React, { useState, useEffect } from "react";
 import {
    Container, Typography, Table, TableHead, TableRow, TableCell,
-   TableBody, TableContainer, Paper, Button
+   TableBody, TableContainer, Paper, Button, Dialog, DialogActions,
+   DialogContent, DialogTitle, MenuItem, Select, FormControl, InputLabel
 } from "@mui/material";
-import api from "../api/api"; // Ensure that your api file is correctly set up for making requests to the backend
-import Navbar from "../components/Navbar";
+import api from "../api/api";
 
 const ViewAllResources = () => {
    const [resources, setResources] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
+   const [openDialog, setOpenDialog] = useState(false);
+   const [selectedResource, setSelectedResource] = useState(null);
+   const [filter, setFilter] = useState("all");
 
    useEffect(() => {
-      const fetchResources = async () => {
-         try {
-            const response = await api.get("/api/resources");
-            console.log("Fetched Resources:", response.data);
-
-            // Check if resource_item_id exists in the fetched data
-            if (response.data && Array.isArray(response.data)) {
-               setResources(response.data);
-            } else {
-               setError("Invalid data structure received.");
-            }
-         } catch (err) {
-            console.error("Fetch error:", err);
-            setError("Failed to fetch resources. Please try again.");
-         } finally {
-            setLoading(false);
-         }
-      };
-
       fetchResources();
-   }, []);
+   }, [filter]);
 
-   const handleDeleteResource = async (resourceItemId) => {
-      console.log("Deleting resource with ID:", resourceItemId);
-
-      if (!resourceItemId) {
-         console.error("Invalid resource ID:", resourceItemId);
-         return;
-      }
+   const fetchResources = async () => {
+      setLoading(true);
+      setError(null);
+      let endpoint = "/api/resources";
+      if (filter === "available") endpoint = "/api/resources/available";
+      else if (filter === "in_use") endpoint = "/api/resources/in_use";
+      else if (filter === "deleted") endpoint = "/api/resources/deleted";
 
       try {
-         // Send DELETE request to backend
-         const response = await api.delete(`/api/resources/res_item/del/${resourceItemId}`);
-
-
-         // If successful, update the resources state to remove the deleted resource
-         if (response.status === 200) {
-            setResources((prevResources) =>
-               prevResources.filter((resource) => resource.resource_item_id !== resourceItemId)
-            );
-            console.log("Resource deleted successfully.");
+         const response = await api.get(endpoint);
+         if (response.data && Array.isArray(response.data)) {
+            setResources(response.data);
+         } else {
+            setError("Invalid data structure received.");
          }
       } catch (err) {
-         console.error("Delete error:", err);
-
-         // Check if error response exists and handle accordingly
-         if (err.response && err.response.data && err.response.data.message) {
-            const errorMessage = err.response.data.message;
-
-            // Show specific error message from backend
-            if (errorMessage === 'Resource item is currently in use and cannot be deleted.') {
-               setError("This resource is currently in use and cannot be deleted.");
-            } else if (errorMessage === 'Resource item not found.') {
-               setError("The resource item you are trying to delete was not found.");
-            } else {
-               setError("Failed to delete resource. Please try again.");
-            }
-         } else {
-            setError("An unexpected error occurred. Please try again.");
-         }
+         setError("Failed to fetch resources. Please try again.");
+      } finally {
+         setLoading(false);
       }
    };
 
-   // Filter out resources that have been marked as deleted
-   const visibleResources = resources.filter((resource) => resource.status !== "deleted");
+   const handleDeleteResource = async () => {
+      if (!selectedResource) return;
+      try {
+         const response = await api.delete(`/api/resources/res_item/del/${selectedResource}`);
+         if (response.status === 200) {
+            setResources((prevResources) => prevResources.filter((resource) => resource.resource_item_id !== selectedResource));
+         }
+      } catch (err) {
+         setError("Failed to delete resource. Please try again.");
+      } finally {
+         setOpenDialog(false);
+      }
+   };
+
+   const handleOpenDialog = (resourceItemId) => {
+      setSelectedResource(resourceItemId);
+      setOpenDialog(true);
+   };
+
+   const handleCloseDialog = () => {
+      setOpenDialog(false);
+      setSelectedResource(null);
+   };
 
    return (
       <Container>
-         <div >
-            <Navbar />
-         </div>
-         <Typography variant="h4" sx={{ textAlign: "center", mt: 4 }}>
+         <Typography variant="h5" sx={{ textAlign: "center", mt: 4 }}>
+            
             View All Resources
          </Typography>
+         <FormControl sx={{ minWidth: 150, my: 1 }}>
+            <InputLabel >Filter</InputLabel>
+            <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
+               <MenuItem value="all">All</MenuItem>
+               <MenuItem value="available">Available</MenuItem>
+               <MenuItem value="in_use">In Use</MenuItem>
+               <MenuItem value="deleted">Deleted</MenuItem>
+            </Select>
+         </FormControl>
          {loading ? (
             <Typography variant="h6" sx={{ textAlign: "center", mt: 4 }}>
                Loading resources...
@@ -107,7 +100,7 @@ const ViewAllResources = () => {
                      </TableRow>
                   </TableHead>
                   <TableBody>
-                     {visibleResources.map((resource) => (
+                     {resources.map((resource) => (
                         <TableRow key={resource.resource_item_id}>
                            <TableCell>{resource.resource_type}</TableCell>
                            <TableCell>{resource.serial_number}</TableCell>
@@ -117,7 +110,8 @@ const ViewAllResources = () => {
                               <Button
                                  variant="contained"
                                  color="error"
-                                 onClick={() => handleDeleteResource(resource.resource_item_id)}
+                                 onClick={() => handleOpenDialog(resource.resource_item_id)}
+                                 disabled={resource.status === "in use" || resource.status === "deleted"}
                               >
                                  Delete
                               </Button>
@@ -128,6 +122,17 @@ const ViewAllResources = () => {
                </Table>
             </TableContainer>
          )}
+         {/* Confirmation Dialog */}
+         <Dialog open={openDialog} onClose={handleCloseDialog}>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+               <Typography>Are you sure you want to delete this item?</Typography>
+            </DialogContent>
+            <DialogActions>
+               <Button onClick={handleCloseDialog} color="primary">Cancel</Button>
+               <Button onClick={handleDeleteResource} color="error">Delete</Button>
+            </DialogActions>
+         </Dialog>
       </Container>
    );
 };
