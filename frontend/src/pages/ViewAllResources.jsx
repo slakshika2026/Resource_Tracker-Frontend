@@ -67,11 +67,10 @@ const ViewAllResources = () => {
    return (
       <Container>
          <Typography variant="h5" sx={{ textAlign: "center", mt: 4 }}>
-            
+
             View All Resources
          </Typography>
          <FormControl sx={{ minWidth: 150, my: 1 }}>
-            <InputLabel >Filter</InputLabel>
             <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
                <MenuItem value="all">All</MenuItem>
                <MenuItem value="available">Available</MenuItem>
@@ -90,7 +89,7 @@ const ViewAllResources = () => {
          ) : (
             <TableContainer component={Paper}>
                <Table>
-                  <TableHead>
+                  <TableHead sx={{ backgroundColor: "#f7f7f7" }}>
                      <TableRow>
                         <TableCell>Resource Type</TableCell>
                         <TableCell>Serial Number</TableCell>
