@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu"; // Sidebar toggle icon
 import { jwtDecode } from "jwt-decode";
 import DropdownMenu from "./DropdownMenu";
+import logo from "../assets/logo.png";
 
 
 const Navbar = () => {
@@ -53,19 +54,18 @@ const Navbar = () => {
             </IconButton>
 
 
-
             <Typography
                variant="h6"
                sx={{
-                  flexGrow: 1,
                   fontWeight: "bold",
                   letterSpacing: 1.5,
-                  color: "#FFFFFF", // White text color
-                  textAlign: "center", // Center title
+                  color: "#FFFFFF",
                }}
             >
-               Resource Allocation and Tracking System
+               RESOURCE MONITOR - Resource Allocation and Tracking System
             </Typography>
+
+
 
             {/* User authentication buttons */}
             <Box sx={{ display: "flex", gap: 2 }}>
