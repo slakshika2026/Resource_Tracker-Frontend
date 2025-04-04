@@ -13,7 +13,7 @@ import api from "../api/api";
 import CategoryList from "./CategoryList";
 import AllocatedResourceList from "./AllocatedResourceList";
 
-const ProjectList = ({ projects,loading }) => {
+const ProjectList = ({ projects, loading }) => {
    // const [projects, setProjects] = useState([]);
    // const [loading, setLoading] = useState(false);
    const [error, setError] = useState(null);

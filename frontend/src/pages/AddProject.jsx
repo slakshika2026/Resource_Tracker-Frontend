@@ -1,26 +1,33 @@
 import React, { useState } from "react";
-import { Container, Typography, TextField, Button, Stack, Snackbar } from "@mui/material";
+import {
+   Container,
+   TextField,
+   Button,
+   Typography,
+   Box,
+   Alert,
+   Paper,
+   Snackbar,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";  // Assuming you have an api.js file for API calls
-
+import api from "../api/api";
 
 const AddProject = () => {
    const [projectName, setProjectName] = useState("");
    const [description, setDescription] = useState("");
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState("");
-   const [successMessage, setSuccessMessage] = useState("");  // State to hold success message
-   const [buttonDisabled, setButtonDisabled] = useState(false);  // To disable button after project is added
+   const [successMessage, setSuccessMessage] = useState("");
+   const [buttonDisabled, setButtonDisabled] = useState(false);
    const navigate = useNavigate();
 
-   // Function to check project name uniqueness
-   const checkProjectNameUniqueness = async (projectName) => {
+   const checkProjectNameUniqueness = async (name) => {
       try {
-         const response = await api.post('/api/projects/check-name', { name: projectName });
-         return response.data.isUnique;  // Return true if unique, false if not
-      } catch (error) {
-         console.error('Error checking project name:', error);
-         return false;  // Return false if there was an error
+         const response = await api.post("/api/projects/check-name", { name });
+         return response.data.isUnique;
+      } catch (err) {
+         console.error("Error checking project name:", err);
+         return false;
       }
    };
 
@@ -28,14 +35,13 @@ const AddProject = () => {
       e.preventDefault();
       setLoading(true);
       setError("");
-      setSuccessMessage(""); // Clear previous success message
-      setButtonDisabled(true); // Disable button when adding the project
+      setSuccessMessage("");
+      setButtonDisabled(true);
 
-      // Check if project name is unique
       const isUnique = await checkProjectNameUniqueness(projectName);
       if (!isUnique) {
          setError("Project name must be unique. Please choose another name.");
-         setButtonDisabled(false); // Re-enable button if name is not unique
+         setButtonDisabled(false);
          setLoading(false);
          return;
       }
@@ -47,79 +53,100 @@ const AddProject = () => {
          });
 
          if (response.status === 201) {
-            setSuccessMessage("Project added successfully!");  // Set success message
-            setTimeout(() => navigate("/dashboard"), 2000); // Redirect after 2 seconds
+            setSuccessMessage("Project added successfully!");
+            setTimeout(() => navigate("/dashboard"), 2000);
          }
       } catch (err) {
-         setError("Failed to add the project. Please try again.");
          console.error("Error adding project:", err);
-         setButtonDisabled(false); // Re-enable button if there's an error
+         setError("Failed to add the project. Please try again.");
+         setButtonDisabled(false);
       } finally {
          setLoading(false);
       }
    };
 
    return (
-      <Container sx={{ maxWidth: 600, mt: 5 }}>
-         <Typography variant="h5" align="center" gutterBottom sx={{ color: "#333333", mt: 3 }}>
-            Add New Project
-         </Typography>
-
-         {
-            error && (
-               <Typography color="error" align="center" sx={{ mb: 2 }}>
-                  {error}
+      <Container
+         maxWidth="sm"
+         sx={{
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+         }}
+      >
+         <Paper elevation={3} sx={{ padding: 4, borderRadius: 3, width: "100%" }}>
+            <Box
+               component="form"
+               onSubmit={handleAddProject}
+               sx={{
+                  display: "flex",
+                  flexDirection: "column",
+               }}
+            >
+               <Typography
+                  variant="h5"
+                  align="center"
+                  sx={{ mb: 3, fontWeight: "bold", color: "#205781" }}
+               >
+                  Add Project
                </Typography>
-            )
-         }
 
-         {
-            successMessage && (
-               <Typography color="success" align="center" sx={{ mb: 2 }}>
-                  {successMessage}
-               </Typography>
-            )
-         }
-
-         <form onSubmit={handleAddProject}>
-            <Stack spacing={2}>
                <TextField
-                  label="Project Name"
-                  variant="outlined"
                   fullWidth
+                  label="Project Name"
+                  margin="normal"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
                   required
                />
+
                <TextField
-                  label="Project Description"
-                  variant="outlined"
                   fullWidth
+                  label="Project Description"
+                  margin="normal"
+                  multiline
+                  rows={4}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
-                  multiline
-                  rows={4}
                />
+
+               {error && (
+                  <Alert severity="error" sx={{ mt: 2 }}>
+                     {error}
+                  </Alert>
+               )}
+
+               {successMessage && (
+                  <Alert severity="success" sx={{ mt: 2 }}>
+                     {successMessage}
+                  </Alert>
+               )}
+
                <Button
                   type="submit"
+                  fullWidth
                   variant="contained"
-                  color="primary"
-                  sx={{ mt: 2 }}
-                  disabled={loading || buttonDisabled} // Disable button when adding or if already added
+                  sx={{
+                     mt: 3,
+                     backgroundColor: "#205781",
+                     color: "#FFFFFF",
+                     "&:hover": { backgroundColor: "#4F959D" },
+                  }}
+                  disabled={loading || buttonDisabled}
                >
                   {loading ? "Adding..." : "Add Project"}
                </Button>
-            </Stack>
-         </form>
+            </Box>
 
-         {/* Success Snackbar */}
-         <Snackbar
-            open={!!successMessage}
-            message={successMessage}
-            autoHideDuration={3000}
-         />
-      </Container >
+            <Snackbar
+               open={!!successMessage}
+               message={successMessage}
+               autoHideDuration={3000}
+            />
+         </Paper>
+      </Container>
    );
 };
 
