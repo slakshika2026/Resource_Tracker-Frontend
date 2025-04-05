@@ -124,7 +124,13 @@ const AllocatedResourceList = ({ projectId }) => {
                                        Allocated At:{" "}
                                        {allocation.allocated_date
                                           ? new Date(allocation.allocated_date).toLocaleString()
-                                          : "N/A"},<br />
+                                          : "N/A"}
+                                       <br />
+                                       Expected Return Date:{" "}
+                                       {allocation.expected_return_date
+                                          ? new Date(allocation.expected_return_date).toLocaleDateString()
+                                          : "N/A"}
+                                       <br />
                                        for project: {allocation.project_name}
                                     </Typography>
 
@@ -140,6 +146,7 @@ const AllocatedResourceList = ({ projectId }) => {
                               )}
                            </>
                         }
+
                      />
                   </ListItem>
                ))}

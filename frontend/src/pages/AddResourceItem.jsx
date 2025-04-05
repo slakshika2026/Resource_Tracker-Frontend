@@ -296,8 +296,17 @@ const AddResourceItem = () => {
                   <Select
                      value={resourceTypeName}
                      onChange={(e) => {
-                        setResourceTypeName(e.target.value);
-                        console.log("Selected Resource Type:", e.target.value); // Log the selected resource type name
+                        const selectedValue = e.target.value;
+                        setResourceTypeName(selectedValue);
+
+                        // Toggle isAddingNew based on selected option
+                        if (selectedValue === "add-new") {
+                           setIsAddingNew(true);
+                        } else {
+                           setIsAddingNew(false); // hide form if a valid existing type is selected
+                        }
+
+                        console.log("Selected Resource Type:", selectedValue);
                      }}
                      label="Resource Type"
                      sx={{
@@ -306,16 +315,14 @@ const AddResourceItem = () => {
                         '& .MuiInputBase-root': { color: "#205781" },
                      }}
                   >
-                     {/* Add option to create new resource type at the top */}
-                     <MenuItem value="add-new" onClick={() => setIsAddingNew(true)}>
-                        Add New Resource Type
-                     </MenuItem>
+                     <MenuItem value="add-new">Add New Resource Type</MenuItem>
                      {resourceTypes.map((type) => (
                         <MenuItem key={type.id} value={type.name}>
                            {type.name}
                         </MenuItem>
                      ))}
                   </Select>
+
                </FormControl>
             )}
 

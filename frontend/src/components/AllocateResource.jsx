@@ -6,6 +6,7 @@ const AllocateResource = ({ resourceId, projectId }) => {
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState("");
    const [successMessage, setSuccessMessage] = useState(""); // Track successful allocation
+   const [expectedReturnDate, setExpectedReturnDate] = useState("");
 
    const handleAllocate = async () => {
       setLoading(true);
@@ -17,6 +18,7 @@ const AllocateResource = ({ resourceId, projectId }) => {
          const response = await api.post(`/api/resources/${resourceId}/allocate_resource`,
             {
                project_id: projectId,
+               expected_return_date: expectedReturnDate,
             }
          );
 
@@ -59,9 +61,18 @@ const AllocateResource = ({ resourceId, projectId }) => {
             </Typography>
          )}
 
+         <TextField
+            label="Expected Return Date"
+            type="date"
+            fullWidth
+            value={expectedReturnDate}
+            onChange={(e) => setExpectedReturnDate(e.target.value)}
+            sx={{ mt: 2 }}
+         />
+
+
          <Button
             variant="contained"
-            color="#4F959D"
             onClick={handleAllocate}
             sx={{ mt: 2 }}
             disabled={loading}
