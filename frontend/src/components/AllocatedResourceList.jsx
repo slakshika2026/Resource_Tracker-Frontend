@@ -54,8 +54,8 @@ const AllocatedResourceList = ({ projectId }) => {
          console.log(resourceItemId);
          console.log("Deallocating resource:", resourceItemId); // Debugging
 
-         const response = await api.put(
-            `/api/resources/update_status/${resourceItemId}`,
+         const response = await api.patch(
+            `api/resources/deallocate/${resourceItemId}`,
             { status: "available" },
             { headers: { "Content-Type": "application/json" } } // Ensure proper headers
          );

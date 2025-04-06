@@ -58,6 +58,9 @@ const ResourceList = ({ resourceType, projectId }) => {
 
    return (
       <Box sx={{ mt: 5 }}>
+         <Typography variant="body1" align="center" gutterBottom sx={{ color: "#333333" }}>
+            Select a Resource Item under the Resource Type: {resourceType.name}
+         </Typography>
          <Stack spacing={3} justifyContent="center">
             {resourceItems.length > 0 ? (
                resourceItems.map((resourceItem) => (

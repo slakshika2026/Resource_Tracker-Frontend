@@ -25,6 +25,11 @@ const ViewAllResources = () => {
    const [statusUpdateSnackbarOpen, setStatusUpdateSnackbarOpen] = useState(false);
    const [openStatusUpdateDialog, setOpenStatusUpdateDialog] = useState(false);  // New state for status update confirmation
    const [statusToUpdate, setStatusToUpdate] = useState(null);  // New state to store the status update info
+   const [openAllocateDialog, setOpenAllocateDialog] = useState(false);
+   const [availableProjects, setAvailableProjects] = useState([]);
+   const [selectedProject, setSelectedProject] = useState("");
+   const [expectedReturnDate, setExpectedReturnDate] = useState("");
+
 
    useEffect(() => {
       fetchResources();
@@ -115,8 +120,10 @@ const ViewAllResources = () => {
    };
 
    const handleOpenMenu = (event, resource) => {
+      console.log("Resource menu opened for:", resource);
       setAnchorEl(event.currentTarget);
       setMenuResource(resource);
+      // Check if this is properly set
    };
 
    const handleCloseMenu = () => {
@@ -149,6 +156,40 @@ const ViewAllResources = () => {
          })
       };
    });
+
+   const handleAllocateResource = async () => {
+      console.log("Allocating resource:", menuResource);
+      console.log("Selected project:", selectedProject);
+      console.log("Expected return date:", expectedReturnDate);
+      if (!selectedProject || !expectedReturnDate) {
+         setError("Please select a project and set the expected return date.");
+         return;
+      }
+      try {
+         // Make an API request to allocate the resource to the project
+         const response = await api.put(`/api/resources/allocate/${menuResource.resource_item_id}/allocate_resource`, {
+            project_id: selectedProject,
+            // user_id: "user-id-here",  // Replace with actual user ID
+            expected_return_date: expectedReturnDate
+         });
+
+         if (response.status === 200) {
+            // Update the local state to reflect the resource allocation
+            setResources(prevResources =>
+               prevResources.map(resource =>
+                  resource.resource_item_id === menuResource.resource_item_id
+                     ? { ...resource, status: "in use", name: response.data.name, expectedReturnDate }
+                     : resource
+               )
+            );
+            setSnackbarOpen(true);
+            setOpenAllocateDialog(false);
+         }
+      } catch (err) {
+         setError("Failed to allocate resource. Please try again.");
+      }
+   };
+
 
    return (
       <Container>
@@ -310,6 +351,31 @@ const ViewAllResources = () => {
                      ? "Make Status: Available"
                      : "Update Status"}
             </MenuItem>
+            <MenuItem
+               onClick={async () => {
+                  if (menuResource?.status !== "available") return;
+
+                  try {
+                     const response = await api.get("/api/projects");
+                     setAvailableProjects(response.data || []);
+                     setOpenAllocateDialog(true);
+                  } catch (err) {
+                     console.error(err);
+                     setError("Failed to fetch project list.");
+                  } finally {
+                     handleCloseMenu();
+                  }
+               }}
+               sx={{
+                  color: "#1976d2", // MUI primary blue or choose a darker color if needed
+                  cursor: menuResource?.status !== "available" ? "not-allowed" : "pointer",
+               }}
+               disabled={menuResource?.status !== "available"}
+            >
+               Allocate to Project
+            </MenuItem>
+
+
          </Menu>
 
          {/* Status Update Confirmation Dialog */}
@@ -334,6 +400,44 @@ const ViewAllResources = () => {
                <Button onClick={handleDeleteResource} color="error">DELETE</Button>
             </DialogActions>
          </Dialog>
+         <Dialog open={openAllocateDialog} onClose={() => setOpenAllocateDialog(false)}>
+            <DialogTitle>ALLOCATE RESOURCE TO PROJECT</DialogTitle>
+            <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+               <FormControl fullWidth size="small">
+                  <Select
+                     value={selectedProject}
+                     onChange={(e) => setSelectedProject(e.target.value)}
+                     displayEmpty
+                  >
+                     <MenuItem value="" disabled>Select Project</MenuItem>
+                     {availableProjects.map((project) => (
+                        <MenuItem key={project.project_id} value={project.project_id}>
+                           {project.name.toUpperCase()}
+                        </MenuItem>
+                     ))}
+                  </Select>
+               </FormControl>
+               <TextField
+                  label="Expected Return Date"
+                  type="date"
+                  value={expectedReturnDate}
+                  onChange={(e) => setExpectedReturnDate(e.target.value)}
+                  size="small"
+                  fullWidth
+               />
+            </DialogContent>
+            <DialogActions>
+               <Button onClick={() => setOpenAllocateDialog(false)} color="primary">
+                  CANCEL
+               </Button>
+               <Button onClick={handleAllocateResource} color="primary">
+                  ALLOCATE
+               </Button>
+            </DialogActions>
+         </Dialog>
+
+
+
 
          <Snackbar
             open={statusUpdateSnackbarOpen}
@@ -344,6 +448,17 @@ const ViewAllResources = () => {
                STATUS UPDATED SUCCESSFULLY!
             </Alert>
          </Snackbar>
+         <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={3000}
+            onClose={() => setSnackbarOpen(false)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+         >
+            <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: "100%" }}>
+               Resource updated successfully!
+            </Alert>
+         </Snackbar>
+
       </Container>
    );
 };

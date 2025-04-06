@@ -5,12 +5,9 @@ import ProjectList from "../components/ProjectList";
 
 const Dashboard = () => {
 
-   const [projects, setProjects] = useState([]);
-   const [loading, setLoading] = useState(true); // Loading state
-
    return (
       <Container>
-         <ProjectList projects={projects} loading={loading} />
+         <ProjectList />
       </Container>
    );
 };

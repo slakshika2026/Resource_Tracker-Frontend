@@ -58,8 +58,8 @@ const ResourceType = ({ category, projectId }) => {
 
    return (
       <Container sx={{ mt: 5 }}>
-         <Typography variant="h6" align="center" gutterBottom sx={{ color: "#333333" }}>
-            Resource Types for {category}
+         <Typography variant="body1" align="center" gutterBottom sx={{ color: "#333333" }} >
+            Select a Resource type under the category: {category}
          </Typography>
          <Grid2 container spacing={3} justifyContent="center">
             {resourceTypes.map((resource, index) => (
