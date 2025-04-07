@@ -47,6 +47,7 @@ const ViewAllResources = () => {
       } else if (filter === "under_maintenance") {
          endpoint = "/api/resources/under_maintenance";
       }
+      //Don't call Apis seperately here
 
       try {
          const response = await api.get(endpoint);
@@ -134,7 +135,7 @@ const ViewAllResources = () => {
    const handleOpenDialog = (resourceItemId) => {
       setSelectedResource(resourceItemId);
       setOpenDialog(true);
-      handleCloseMenu();
+      // handleCloseMenu();
    };
 
    // Group resources by type
@@ -161,13 +162,14 @@ const ViewAllResources = () => {
       console.log("Allocating resource:", menuResource);
       console.log("Selected project:", selectedProject);
       console.log("Expected return date:", expectedReturnDate);
+      console.log("Selected resource:", menuResource);
       if (!selectedProject || !expectedReturnDate) {
          setError("Please select a project and set the expected return date.");
          return;
       }
       try {
          // Make an API request to allocate the resource to the project
-         const response = await api.put(`/api/resources/allocate/${menuResource.resource_item_id}/allocate_resource`, {
+         const response = await api.post(`/api/resources/${menuResource.resource_item_id}/allocate_resource`, {
             project_id: selectedProject,
             // user_id: "user-id-here",  // Replace with actual user ID
             expected_return_date: expectedReturnDate
@@ -356,14 +358,13 @@ const ViewAllResources = () => {
                   if (menuResource?.status !== "available") return;
 
                   try {
+
                      const response = await api.get("/api/projects");
                      setAvailableProjects(response.data || []);
                      setOpenAllocateDialog(true);
                   } catch (err) {
                      console.error(err);
                      setError("Failed to fetch project list.");
-                  } finally {
-                     handleCloseMenu();
                   }
                }}
                sx={{
