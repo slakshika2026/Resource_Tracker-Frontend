@@ -141,7 +141,7 @@ const AddProject = () => {
             </Box>
 
             <Snackbar
-               open={!!successMessage}
+               open={successMessage}
                message={successMessage}
                autoHideDuration={3000}
             />

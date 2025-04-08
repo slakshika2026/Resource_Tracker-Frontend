@@ -51,8 +51,7 @@ const AllocatedResourceList = ({ projectId }) => {
    // Function to deallocate a resource
    const handleDeallocate = async (resourceItemId) => {
       try {
-         console.log(resourceItemId);
-         console.log("Deallocating resource:", resourceItemId); // Debugging
+      
 
          const response = await api.patch(
             `api/resources/deallocate/${resourceItemId}`,
