@@ -51,11 +51,10 @@ const AllocatedResourceList = ({ projectId }) => {
    // Function to deallocate a resource
    const handleDeallocate = async (resourceItemId) => {
       try {
-         console.log(resourceItemId);
-         console.log("Deallocating resource:", resourceItemId); // Debugging
+      
 
-         const response = await api.put(
-            `/api/resources/update_status/${resourceItemId}`,
+         const response = await api.patch(
+            `api/resources/deallocate/${resourceItemId}`,
             { status: "available" },
             { headers: { "Content-Type": "application/json" } } // Ensure proper headers
          );
@@ -124,7 +123,13 @@ const AllocatedResourceList = ({ projectId }) => {
                                        Allocated At:{" "}
                                        {allocation.allocated_date
                                           ? new Date(allocation.allocated_date).toLocaleString()
-                                          : "N/A"},<br />
+                                          : "N/A"}
+                                       <br />
+                                       Expected Return Date:{" "}
+                                       {allocation.expected_return_date
+                                          ? new Date(allocation.expected_return_date).toLocaleDateString()
+                                          : "N/A"}
+                                       <br />
                                        for project: {allocation.project_name}
                                     </Typography>
 
@@ -140,6 +145,7 @@ const AllocatedResourceList = ({ projectId }) => {
                               )}
                            </>
                         }
+
                      />
                   </ListItem>
                ))}

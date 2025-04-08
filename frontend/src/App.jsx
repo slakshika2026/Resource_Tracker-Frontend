@@ -8,12 +8,11 @@ import AddProject from "./pages/AddProject";
 import Resource_Timeline_Display from "./pages/ResourceTimelineDisplay";
 import AddResourceItem from "./pages/AddResourceItem";
 import ViewAllResources from './pages/ViewAllResources';
-
+import ResourceAllocationPage from './pages/ResourceAllocationPage';
 
 function App() {
   return (
     <Router>
-
       <Routes>
         //Routes without layout
         <Route path="/" element={<Login />} />
@@ -27,6 +26,8 @@ function App() {
           <Route path="/allocation-history" element={<Resource_Timeline_Display />} />
           <Route path="/add-resource-item" element={<AddResourceItem />} />
           <Route path="/view-all-resources" element={<ViewAllResources />} />
+          <Route path="/project-details/:projectId" element={<ResourceAllocationPage />} />
+
         </Route>
       </Routes>
 
