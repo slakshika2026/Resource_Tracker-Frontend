@@ -121,7 +121,7 @@ const ViewAllResources = () => {
    };
 
    const handleOpenMenu = (event, resource) => {
-      console.log("Resource menu opened for:", resource);
+      
       setAnchorEl(event.currentTarget);
       setMenuResource(resource);
       // Check if this is properly set
@@ -159,10 +159,7 @@ const ViewAllResources = () => {
    });
 
    const handleAllocateResource = async () => {
-      console.log("Allocating resource:", menuResource);
-      console.log("Selected project:", selectedProject);
-      console.log("Expected return date:", expectedReturnDate);
-      console.log("Selected resource:", menuResource);
+      
       if (!selectedProject || !expectedReturnDate) {
          setError("Please select a project and set the expected return date.");
          return;
